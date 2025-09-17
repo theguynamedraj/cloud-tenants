@@ -1,1 +1,13 @@
 project_id = "ealtyxadztsfepcfcjji"
+
+[functions.health]
+verify_jwt = false
+
+[functions.notes]
+verify_jwt = true
+
+[functions.upgrade-tenant]
+verify_jwt = true
+
+[functions.seed-test-users]
+verify_jwt = false
