@@ -1,12 +1,45 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/AuthContext';
+import { useToast } from '@/hooks/use-toast';
 
 const Index = () => {
   const navigate = useNavigate();
   const { user, loading } = useAuth();
+  const { toast } = useToast();
+  const [isSeeding, setIsSeeding] = useState(false);
+
+  const seedTestUsers = async () => {
+    setIsSeeding(true);
+    try {
+      const response = await fetch('https://ealtyxadztsfepcfcjji.supabase.co/functions/v1/seed-test-users', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImVhbHR5eGFkenRzZmVwY2ZjamppIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTgwODQ2NzUsImV4cCI6MjA3MzY2MDY3NX0.htng2CQ6ivyHl5QEs3YepnfZ3anxe4Qmu3Dtq9Ky6Wg'
+        }
+      });
+      
+      if (response.ok) {
+        toast({
+          title: "Success!",
+          description: "Test users have been seeded. You can now login.",
+        });
+      } else {
+        throw new Error(`Failed to seed users: ${response.status}`);
+      }
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to seed test users. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSeeding(false);
+    }
+  };
 
   useEffect(() => {
     if (!loading && user) {
@@ -44,12 +77,22 @@ const Index = () => {
               <li>• Secure CRUD operations</li>
             </ul>
           </div>
-          <Button 
-            onClick={() => navigate('/login')} 
-            className="w-full"
-          >
-            Get Started
-          </Button>
+          <div className="space-y-2">
+            <Button 
+              onClick={seedTestUsers} 
+              disabled={isSeeding}
+              className="w-full"
+              variant="outline"
+            >
+              {isSeeding ? 'Seeding Users...' : 'Seed Test Users'}
+            </Button>
+            <Button 
+              onClick={() => navigate('/login')} 
+              className="w-full"
+            >
+              Get Started
+            </Button>
+          </div>
         </CardContent>
       </Card>
     </div>
