@@ -69,9 +69,9 @@ const Login = () => {
       <div className="w-full max-w-md space-y-6">
         <Card>
           <CardHeader className="text-center">
-            <CardTitle className="text-2xl font-bold">Notes SaaS</CardTitle>
+            <CardTitle className="text-2xl font-bold">Nottes</CardTitle>
             <CardDescription>
-              Multi-tenant notes application
+              Your intelligent multi-tenant notes platform
             </CardDescription>
           </CardHeader>
           <CardContent>

@@ -62,9 +62,9 @@ const Index = () => {
     <div className="flex min-h-screen items-center justify-center bg-background p-4">
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold">Notes SaaS</CardTitle>
+          <CardTitle className="text-3xl font-bold">Nottes</CardTitle>
           <CardDescription>
-            Multi-tenant notes application with role-based access control
+            Your intelligent multi-tenant notes platform with secure collaboration
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">

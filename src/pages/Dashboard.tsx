@@ -106,7 +106,7 @@ const Dashboard = () => {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold text-foreground">Notes Dashboard</h1>
+              <h1 className="text-2xl font-bold text-foreground">Nottes Dashboard</h1>
               <div className="flex items-center space-x-2">
                 <Badge variant="secondary">{tenant?.name}</Badge>
                 <Badge variant={tenant?.subscription_plan === 'pro' ? 'default' : 'outline'}>
