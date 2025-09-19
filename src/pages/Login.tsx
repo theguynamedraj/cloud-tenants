@@ -15,6 +15,8 @@ const Login = () => {
   const { signIn, user, loading } = useAuth();
   const { toast } = useToast();
 
+  console.log('🔍 Login component render:', { hasUser: !!user, loading, userEmail: user?.email });
+
   if (loading) {
     return (
       <div className="flex min-h-screen items-center justify-center">

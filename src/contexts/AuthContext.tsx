@@ -39,19 +39,26 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     let isMounted = true;
 
     const fetchProfile = async (userId: string) => {
+      console.log('🔍 Fetching profile for user:', userId);
       try {
         const { data: profileData, error } = await supabase
           .from('profiles')
           .select('*')
           .eq('user_id', userId)
-          .single();
+          .maybeSingle();
         
-        if (isMounted && !error) {
+        console.log('📋 Profile fetch result:', { profileData, error });
+        
+        if (isMounted) {
+          if (error) {
+            console.error('❌ Error fetching profile:', error);
+          }
           setProfile(profileData);
+          setLoading(false);
+          console.log('✅ Profile set, loading complete');
         }
       } catch (error) {
-        console.error('Error fetching profile:', error);
-      } finally {
+        console.error('❌ Error fetching profile:', error);
         if (isMounted) {
           setLoading(false);
         }
@@ -61,6 +68,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     // Set up auth state listener
     const { data: { subscription } } = supabase.auth.onAuthStateChange(
       (event, session) => {
+        console.log('🔐 Auth state change:', { event, hasSession: !!session, hasUser: !!session?.user });
+        
         if (!isMounted) return;
         
         setSession(session);
@@ -77,6 +86,8 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
 
     // Check for existing session
     supabase.auth.getSession().then(({ data: { session } }) => {
+      console.log('🔍 Initial session check:', { hasSession: !!session, hasUser: !!session?.user });
+      
       if (!isMounted) return;
       
       setSession(session);

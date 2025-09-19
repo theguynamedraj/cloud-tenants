@@ -22,6 +22,8 @@ const Dashboard = () => {
   const [tenant, setTenant] = useState<Tenant | null>(null);
   const [isUpgrading, setIsUpgrading] = useState(false);
 
+  console.log('🏠 Dashboard render:', { hasUser: !!user, hasProfile: !!profile, loading, userEmail: user?.email, profileRole: profile?.role });
+
   useEffect(() => {
     if (profile?.tenant_id) {
       fetchTenant();
