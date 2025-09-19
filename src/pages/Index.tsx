@@ -59,18 +59,18 @@ const Index = () => {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-background p-4" style={{backgroundColor: 'white', minHeight: '100vh'}}>
-      <Card className="w-full max-w-md border border-gray-200" style={{backgroundColor: 'white', border: '1px solid #e2e8f0'}}>
+    <div className="flex min-h-screen items-center justify-center bg-background p-4">
+      <Card className="w-full max-w-md">
         <CardHeader className="text-center">
-          <CardTitle className="text-3xl font-bold text-black">Nottes</CardTitle>
-          <CardDescription className="text-gray-600">
+          <CardTitle className="text-3xl font-bold">Nottes</CardTitle>
+          <CardDescription>
             Your intelligent multi-tenant notes platform with secure collaboration
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="text-center space-y-2">
-            <h2 className="text-lg font-semibold text-black">Features</h2>
-            <ul className="text-sm text-gray-600 space-y-1">
+            <h2 className="text-lg font-semibold">Features</h2>
+            <ul className="text-sm text-muted-foreground space-y-1">
               <li>• Multi-tenant architecture</li>
               <li>• Role-based access (Admin/Member)</li>
               <li>• Subscription-based feature gating</li>
@@ -81,16 +81,14 @@ const Index = () => {
             <Button 
               onClick={seedTestUsers} 
               disabled={isSeeding}
-              className="w-full bg-white border border-gray-300 text-black hover:bg-gray-50"
+              className="w-full"
               variant="outline"
-              style={{backgroundColor: 'white', color: 'black', border: '1px solid #d1d5db'}}
             >
               {isSeeding ? 'Seeding Users...' : 'Seed Test Users'}
             </Button>
             <Button 
               onClick={() => navigate('/login')} 
-              className="w-full bg-blue-600 text-white hover:bg-blue-700"
-              style={{backgroundColor: '#2563eb', color: 'white'}}
+              className="w-full"
             >
               Get Started
             </Button>
