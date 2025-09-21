@@ -115,7 +115,7 @@ const NotesManager: React.FC<NotesManagerProps> = ({ tenantPlan, userRole }) => 
     setIsSubmitting(true);
 
     try {
-      const response = await supabase.functions.invoke('notes', {
+      const response = await supabase.functions.invoke(`notes/${editingNote.id}`, {
         method: 'PUT',
         body: {
           title: formData.title,
@@ -154,7 +154,7 @@ const NotesManager: React.FC<NotesManagerProps> = ({ tenantPlan, userRole }) => 
     }
 
     try {
-      const response = await supabase.functions.invoke('notes', {
+      const response = await supabase.functions.invoke(`notes/${noteId}`, {
         method: 'DELETE',
       });
 
