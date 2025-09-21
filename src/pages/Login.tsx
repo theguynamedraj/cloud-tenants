@@ -29,6 +29,7 @@ const Login = () => {
   }
 
   if (user) {
+    console.log('🚀 Attempting to navigate to dashboard, user:', user.email);
     return <Navigate to="/dashboard" replace />;
   }
 
