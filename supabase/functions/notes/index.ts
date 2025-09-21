@@ -140,6 +140,7 @@ serve(async (req) => {
 
       case 'PUT':
         const updateData = await req.json();
+        const updateNoteId = updateData.noteId;
         
         const { data: updatedNote, error: updateError } = await supabase
           .from('notes')
@@ -147,7 +148,7 @@ serve(async (req) => {
             title: updateData.title,
             content: updateData.content
           })
-          .eq('id', noteId)
+          .eq('id', updateNoteId)
           .eq('user_id', user.id)
           .eq('tenant_id', profile.tenant_id)
           .select()
@@ -166,10 +167,13 @@ serve(async (req) => {
         );
 
       case 'DELETE':
+        const deleteData = await req.json();
+        const deleteNoteId = deleteData.noteId;
+        
         const { error: deleteError } = await supabase
           .from('notes')
           .delete()
-          .eq('id', noteId)
+          .eq('id', deleteNoteId)
           .eq('user_id', user.id)
           .eq('tenant_id', profile.tenant_id);
 
