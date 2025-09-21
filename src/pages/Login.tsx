@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Navigate, useNavigate } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Navigate } from 'react-router-dom';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -14,17 +14,8 @@ const Login = () => {
   
   const { signIn, user, loading } = useAuth();
   const { toast } = useToast();
-  const navigate = useNavigate();
 
   console.log('🔍 Login component render:', { hasUser: !!user, loading, userEmail: user?.email });
-
-  // Navigate to dashboard when user becomes authenticated
-  useEffect(() => {
-    if (user && !loading) {
-      console.log('🚀 User authenticated, navigating to dashboard');
-      navigate('/dashboard', { replace: true });
-    }
-  }, [user, loading, navigate]);
 
   if (loading) {
     return (
@@ -54,7 +45,6 @@ const Login = () => {
         variant: "destructive",
       });
     } else {
-      console.log('✅ Login successful, waiting for auth state update');
       toast({
         title: "Login Successful",
         description: "Welcome back!",
