@@ -58,6 +58,28 @@ serve(async (req) => {
       if (operation === 'update') {
         const updateNoteId = body.noteId;
         
+        // First check if the note exists and belongs to the user
+        const { data: existingNote } = await supabase
+          .from('notes')
+          .select('user_id')
+          .eq('id', updateNoteId)
+          .eq('tenant_id', profile.tenant_id)
+          .single();
+
+        if (!existingNote) {
+          return new Response(
+            JSON.stringify({ error: 'Note not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (existingNote.user_id !== user.id) {
+          return new Response(
+            JSON.stringify({ error: 'You can only edit your own notes' }),
+            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+        
         const { data: updatedNote, error: updateError } = await supabase
           .from('notes')
           .update({
@@ -85,6 +107,28 @@ serve(async (req) => {
 
       if (operation === 'delete') {
         const deleteNoteId = body.noteId;
+        
+        // First check if the note exists and belongs to the user
+        const { data: existingNote } = await supabase
+          .from('notes')
+          .select('user_id')
+          .eq('id', deleteNoteId)
+          .eq('tenant_id', profile.tenant_id)
+          .single();
+
+        if (!existingNote) {
+          return new Response(
+            JSON.stringify({ error: 'Note not found' }),
+            { status: 404, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        if (existingNote.user_id !== user.id) {
+          return new Response(
+            JSON.stringify({ error: 'You can only delete your own notes' }),
+            { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
         
         const { error: deleteError } = await supabase
           .from('notes')
