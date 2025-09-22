@@ -50,6 +50,110 @@ serve(async (req) => {
     const pathParts = url.pathname.split('/');
     const noteId = pathParts[pathParts.length - 1];
 
+    // Handle POST requests with operation parameter for all CRUD operations
+    if (req.method === 'POST') {
+      const body = await req.json();
+      const operation = body.operation;
+
+      if (operation === 'update') {
+        const updateNoteId = body.noteId;
+        
+        const { data: updatedNote, error: updateError } = await supabase
+          .from('notes')
+          .update({
+            title: body.title,
+            content: body.content
+          })
+          .eq('id', updateNoteId)
+          .eq('user_id', user.id)
+          .eq('tenant_id', profile.tenant_id)
+          .select()
+          .single();
+
+        if (updateError) {
+          return new Response(
+            JSON.stringify({ error: updateError.message }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify(updatedNote),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      if (operation === 'delete') {
+        const deleteNoteId = body.noteId;
+        
+        const { error: deleteError } = await supabase
+          .from('notes')
+          .delete()
+          .eq('id', deleteNoteId)
+          .eq('user_id', user.id)
+          .eq('tenant_id', profile.tenant_id);
+
+        if (deleteError) {
+          return new Response(
+            JSON.stringify({ error: deleteError.message }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify({ message: 'Note deleted successfully' }),
+          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+
+      // If no operation is specified, it's a create operation
+      if (!operation) {
+        const { title, content } = body;
+
+        // Check subscription limits
+        const { data: tenant } = await supabase
+          .from('tenants')
+          .select('subscription_plan')
+          .eq('id', profile.tenant_id)
+          .single();
+
+        if (tenant?.subscription_plan === 'free') {
+          const { data: noteCount } = await supabase
+            .rpc('get_tenant_note_count', { tenant_uuid: profile.tenant_id });
+
+          if (noteCount >= 3) {
+            return new Response(
+              JSON.stringify({ error: 'Free plan limited to 3 notes. Upgrade to Pro for unlimited notes.' }),
+              { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+            );
+          }
+        }
+
+        const { data: newNote, error: createError } = await supabase
+          .from('notes')
+          .insert({
+            title,
+            content,
+            tenant_id: profile.tenant_id,
+            user_id: user.id
+          })
+          .select()
+          .single();
+
+        if (createError) {
+          return new Response(
+            JSON.stringify({ error: createError.message }),
+            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+          );
+        }
+
+        return new Response(
+          JSON.stringify(newNote),
+          { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+        );
+      }
+    }
+
     switch (req.method) {
       case 'GET':
         if (noteId && noteId !== 'notes') {
@@ -93,101 +197,6 @@ serve(async (req) => {
           );
         }
 
-      case 'POST':
-        const { title, content } = await req.json();
-
-        // Check subscription limits
-        const { data: tenant } = await supabase
-          .from('tenants')
-          .select('subscription_plan')
-          .eq('id', profile.tenant_id)
-          .single();
-
-        if (tenant?.subscription_plan === 'free') {
-          const { data: noteCount } = await supabase
-            .rpc('get_tenant_note_count', { tenant_uuid: profile.tenant_id });
-
-          if (noteCount >= 3) {
-            return new Response(
-              JSON.stringify({ error: 'Free plan limited to 3 notes. Upgrade to Pro for unlimited notes.' }),
-              { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-            );
-          }
-        }
-
-        const { data: newNote, error: createError } = await supabase
-          .from('notes')
-          .insert({
-            title,
-            content,
-            tenant_id: profile.tenant_id,
-            user_id: user.id
-          })
-          .select()
-          .single();
-
-        if (createError) {
-          return new Response(
-            JSON.stringify({ error: createError.message }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        return new Response(
-          JSON.stringify(newNote),
-          { status: 201, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-
-      case 'PUT':
-        const updateData = await req.json();
-        const updateNoteId = updateData.noteId;
-        
-        const { data: updatedNote, error: updateError } = await supabase
-          .from('notes')
-          .update({
-            title: updateData.title,
-            content: updateData.content
-          })
-          .eq('id', updateNoteId)
-          .eq('user_id', user.id)
-          .eq('tenant_id', profile.tenant_id)
-          .select()
-          .single();
-
-        if (updateError) {
-          return new Response(
-            JSON.stringify({ error: updateError.message }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        return new Response(
-          JSON.stringify(updatedNote),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
-
-      case 'DELETE':
-        const deleteData = await req.json();
-        const deleteNoteId = deleteData.noteId;
-        
-        const { error: deleteError } = await supabase
-          .from('notes')
-          .delete()
-          .eq('id', deleteNoteId)
-          .eq('user_id', user.id)
-          .eq('tenant_id', profile.tenant_id);
-
-        if (deleteError) {
-          return new Response(
-            JSON.stringify({ error: deleteError.message }),
-            { status: 500, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-          );
-        }
-
-        return new Response(
-          JSON.stringify({ message: 'Note deleted successfully' }),
-          { headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
-        );
 
       default:
         return new Response(

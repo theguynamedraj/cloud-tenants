@@ -116,8 +116,8 @@ const NotesManager: React.FC<NotesManagerProps> = ({ tenantPlan, userRole }) => 
 
     try {
       const response = await supabase.functions.invoke('notes', {
-        method: 'PUT',
         body: {
+          operation: 'update',
           noteId: editingNote.id,
           title: formData.title,
           content: formData.content,
@@ -156,8 +156,10 @@ const NotesManager: React.FC<NotesManagerProps> = ({ tenantPlan, userRole }) => 
 
     try {
       const response = await supabase.functions.invoke('notes', {
-        method: 'DELETE',
-        body: { noteId },
+        body: { 
+          operation: 'delete',
+          noteId 
+        },
       });
 
       if (response.error) {
