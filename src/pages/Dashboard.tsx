@@ -241,6 +241,24 @@ const Dashboard = () => {
           </Card>
         </section>
       </main>
+
+      {/* Footer */}
+      <footer className="border-t border-border bg-card mt-12">
+        <div className="container mx-auto px-4 py-6">
+          <div className="flex flex-col md:flex-row justify-between items-center gap-4">
+            <div className="text-center md:text-left">
+              <p className="text-sm text-muted-foreground">
+                © 2024 Nottes. Built with care for your productivity.
+              </p>
+            </div>
+            <div className="flex items-center gap-4 text-sm text-muted-foreground">
+              <span>Tenant: {tenant?.name}</span>
+              <span>•</span>
+              <span>{tenant?.subscription_plan?.toUpperCase()} Plan</span>
+            </div>
+          </div>
+        </div>
+      </footer>
     </div>
   );
 };
